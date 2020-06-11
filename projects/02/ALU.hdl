@@ -45,16 +45,26 @@ CHIP ALU {
    // Put you code here:
    Not16(in=x, out=notx);
    And16(a=x, b=notx, out=zerox);
+   
+   Mux16(a=x, b=zerox, sel=zx, out=zxx);
+   Not16(in=zxx, out=notzxx);
+   Mux16(a=zxx, b=notzxx, sel=nx, out=presetx);
+
    Not16(in=y, out=noty);
    And16(a=y, b=noty, out=zeroy);
-   Mux16(a=x, b=zerox, sel=zx, out=zxx);
-   Mux16(a=zxx, b)
-   Add16(a=x, b=y, out=xplusy);
-   And16(a=x, b=y, out=xandy);
-   Mux16(a=xplusy, b=xandy, sel=f, out=fout);
+   Mux16(a=y, b=zeroy, sel=zy, out=zyy);
+   Not16(in=zyy, out=notzyy);
+   Mux16(a=zyy, b=notzyy, sel=ny, out=presety);
+
+   Add16(a=presetx, b=presety, out=xplusy);
+   And16(a=presetx, b=presety, out=xandy);
+   Mux16(a=xandy, b=xplusy, sel=f, out=fout);
    Not16(in=fout, out=notfout);
-   Mux16(a=fout, b=notfout, sel=no, out=out);
+   Mux16(a=fout, b=notfout, sel=no, out=final);
+
+   Or16Way(in=final, out=zo);
+   Not(in=zo, out=zr);
+   And16(a[0..15]=true, b=final, out[15]=ng, out[0..14]=drop);
    
-   Mux16(a=x, b=y, out=, sel=zx)
-   
+   Or16(a=final, b[0..15]=false, out=out);
 }
