@@ -29,31 +29,31 @@
 
 	@KBD
 	D=M
-	@BLACK
+	@BLACK  // color=BLACK
 	D			;JGT
-	@WHITE
+	@WHITE  // color=WHITE
 	D			;JEQ
 	
 	(BLACK)
-	@color
+	@color   // color=BLACK
 	M=-1
 	@FILL
 	0			;JMP
 
 	
 	(WHITE)
-	@color	
+	@color	 // color=WHITE
 	M=0
 	@FILL
 	0			;JMP
 
-	(FILL)
+	(FILL)   // fill the screen with color
 	@color
 	D=M
 	@pointer
 	A=M
 	M=D
-	@pointer
+	@pointer  // i=i+1
 	M=M+1
 	@LOOP
 	0			;JMP
