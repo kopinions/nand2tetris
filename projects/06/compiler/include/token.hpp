@@ -5,7 +5,7 @@
 
 class token {
 public:
-  enum type { at, number, eof };
+  enum type { at, number, symbol, eof };
 
   token(enum type type) : _type(type), _value("") {}
   token(enum type type, std::string value) : _type(type), _value(value) {}

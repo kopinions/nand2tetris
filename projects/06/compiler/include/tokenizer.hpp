@@ -25,6 +25,16 @@ public:
         tokens.push_back(token(token::type::number, number));
         iter--;
       }
+
+      if (std::isalpha(*iter)) {
+        std::string symbol;
+        symbol += *iter;
+        while (std::isalnum(*(++iter))) {
+          symbol += *iter;
+        }
+        tokens.push_back(token(token::type::symbol, symbol));
+        iter--;
+      }
     }
     tokens.push_back(token(token::type::eof));
     return tokens;
