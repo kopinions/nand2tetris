@@ -5,8 +5,7 @@ tokenizer = executable(
   dependencies : [
     gtest_dep,
     gmock_dep
-  ],
-  link_with : [libparser]
+  ]
 )
 
 test('tokenizer', tokenizer)
