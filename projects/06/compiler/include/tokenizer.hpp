@@ -12,6 +12,18 @@ public:
     for (auto iter = code.begin(); iter != code.end(); iter++) {
       if (*iter == '@') {
         tokens.push_back(token(token::type::at));
+        continue;
+      }
+
+      if (std::isdigit(*iter)) {
+        std::string number;
+        number += *iter;
+
+        while (std::isdigit(*(++iter))) {
+          number += *iter;
+        }
+        tokens.push_back(token(token::type::number, number));
+        iter--;
       }
     }
     tokens.push_back(token(token::type::eof));
