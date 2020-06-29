@@ -16,8 +16,7 @@ public:
     ampersand,
     vbar,
     exclamation,
-    semicolon,
-    eof
+    semicolon
   };
 
   token(enum type type) : _type(type), _value("") {}

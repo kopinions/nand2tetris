@@ -84,7 +84,6 @@ public:
         continue;
       }
     }
-    tokens.push_back(token(token::type::eof));
     return tokens;
   }
 };
