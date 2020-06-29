@@ -5,7 +5,20 @@
 
 class token {
 public:
-  enum type { at, number, symbol, eof };
+  enum type {
+    at,
+    number,
+    symbol,
+    jmp,
+    assign,
+    plus,
+    hyphen,
+    ampersand,
+    vbar,
+    exclamation,
+    semicolon,
+    eof
+  };
 
   token(enum type type) : _type(type), _value("") {}
   token(enum type type, std::string value) : _type(type), _value(value) {}
