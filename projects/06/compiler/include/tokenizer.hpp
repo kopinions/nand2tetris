@@ -11,6 +11,23 @@ public:
     std::list<token> tokens;
 
     for (auto iter = code.begin(); iter != code.end(); iter++) {
+      while (std::isspace(*iter)) {
+        iter++;
+      }
+
+      if (*iter == '/') {
+        if (*(++iter) == '/') {
+          iter++;
+          while (*iter != '\n' && *iter != '\r' && *iter != '\0') {
+            iter++;
+          }
+          iter--;
+        } else {
+          std::cerr << "Unrecognized char '" << *iter << "'"
+                    << " behind /;";
+        }
+        continue;
+      }
       if (*iter == '@') {
         tokens.push_back(token(token::type::at));
         continue;

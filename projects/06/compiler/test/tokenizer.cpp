@@ -69,6 +69,44 @@ TEST(tokenizer, should_able_to_parse_supported_operators) {
   ASSERT_THAT(toks.front().type(), testing::Eq(token::type::vbar));
 }
 
+TEST(tokenizer, should_able_to_parse_c_instruction) {
+  tokenizer to;
+  std::list<token> toks = to.tokenize("MD=D+1;JLE");
+  ASSERT_THAT(toks.size(), 8);
+
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::symbol));
+
+  toks.pop_front();
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::assign));
+
+  toks.pop_front();
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::symbol));
+
+  toks.pop_front();
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::plus));
+
+  toks.pop_front();
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::number));
+
+  toks.pop_front();
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::semicolon));
+
+  toks.pop_front();
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::symbol));
+}
+
+TEST(tokenizer, should_able_to_bypass_comment) {
+  tokenizer to;
+  std::list<token> toks = to.tokenize("//this is comment");
+  ASSERT_THAT(toks.size(), 1);
+}
+
+TEST(tokenizer, should_able_to_bypass_white_space) {
+  tokenizer to;
+  std::list<token> toks = to.tokenize("   //this is comment");
+  ASSERT_THAT(toks.size(), 1);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
