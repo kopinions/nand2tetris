@@ -32,6 +32,7 @@ class cnode : public node {
 public:
   cnode(expression e): _dest(""), _expression(e), _jmp("") {};
   cnode(expression e, std::string jmp): _dest(""), _expression(e), _jmp(jmp) {};
+  cnode(std::string dest, expression e): _dest(dest), _expression(e), _jmp("") {};
   cnode(std::string dest, expression e, std::string jmp): _dest(dest), _expression(e), _jmp(jmp) {};
   virtual void accept(visitor visitor) { visitor.visit(this); }
 private:
