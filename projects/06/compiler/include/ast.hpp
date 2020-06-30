@@ -23,10 +23,21 @@ private:
   std::string _symbol;
 };
 
+class expression: public node {
+public:
+  virtual void accept(visitor visitor) { visitor.visit(this); }
+};
+
 class cnode : public node {
 public:
-  cnode(){};
+  cnode(expression e): _dest(""), _expression(e), _jmp("") {};
+  cnode(expression e, std::string jmp): _dest(""), _expression(e), _jmp(jmp) {};
+  cnode(std::string dest, expression e, std::string jmp): _dest(dest), _expression(e), _jmp(jmp) {};
   virtual void accept(visitor visitor) { visitor.visit(this); }
+private:
+  std::string _dest;
+  expression _expression;
+  std::string _jmp;
 };
 
 #endif // AST_HPP

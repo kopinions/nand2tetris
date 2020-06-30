@@ -16,6 +16,10 @@ public:
   virtual void visit(cnode *){
 
   };
+ 
+  virtual void visit(expression *){
+
+  };
   virtual void visit(std::shared_ptr<context>){
 
   };

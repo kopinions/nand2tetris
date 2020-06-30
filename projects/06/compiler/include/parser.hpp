@@ -1,5 +1,6 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
+#include "ast.hpp"
 #include "token.hpp"
 #include <iostream>
 #include <list>
@@ -36,13 +37,46 @@ public:
           std::cout << iter->type() << std::endl;
           if (iter->type() == token::type::semicolon) {
             iter++; // eat semicolon
+            nodes.push_back(std::make_unique<cnode>(
+                cnode(first.value(), expression(), iter->value())));
             iter++; // eat jump
-            nodes.push_back(std::make_unique<cnode>(cnode()));
+          }
+        } else if (iter->type() == token::type::semicolon) {
+          iter++; // eat ;
+          nodes.push_back(
+              std::make_unique<cnode>(cnode(expression(), iter->value())));
+          iter++; // eat jump
+        } else if (is_operator(*iter)) {
+          token op = *iter;
+          iter++; // eat op
+          token rhs = *iter;
+
+          iter++; // eat rhs
+
+          if (iter->type() == token::type::semicolon) {
+	    iter++; //eat ;
+            nodes.push_back(
+                std::make_unique<cnode>(cnode(expression(), iter->value())));
+	    iter++; // eat jump
           }
         }
       }
     }
     return nodes;
-  };
+  }
+
+private:
+  bool is_operator(token t) {
+    switch (t.type()) {
+    case token::type::plus:
+    case token::type::hyphen:
+    case token::type::ampersand:
+    case token::type::vbar:
+    case token::type::exclamation:
+      return true;
+    default:
+      return false;
+    }
+  }
 };
 #endif // PARSER_HPP
