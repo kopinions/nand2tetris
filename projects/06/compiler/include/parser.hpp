@@ -106,6 +106,46 @@ private:
   std::list<iparser<token, node> *> _parsers;
 };
 
+class cparser : public iparser<token, node> {
+public:
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    if (iter->type() == token::type::symbol && std::next(iter, 1)->type() == token::type::assign) {
+      token first = *iter;
+      iter++; // eat symbol
+      iter++; // eat =
+      expression_parser ep;
+      auto exp = ep.parse(iter);
+      if (exp == std::nullopt) {
+        return std::nullopt;
+      }
+      if (iter->type() == token::type::semicolon) {
+        iter++; // eat semicolon
+        auto result = std::make_unique<cnode>(cnode(first.value(), expression(), iter->value()));
+        iter++; // eat jump
+        return std::make_optional<std::unique_ptr<node>>(std::move(result));
+      } else {
+        auto result = std::make_unique<cnode>(cnode(first.value(), expression(), iter->value()));
+        return std::make_optional<std::unique_ptr<node>>(std::move(result));
+      }
+    } else {
+      expression_parser ep;
+      auto exp = ep.parse(iter);
+      if (exp == std::nullopt) {
+        return std::nullopt;
+      }
+      if (iter->type() == token::type::semicolon) {
+        iter++; // eat semicolon
+        auto result = std::make_unique<cnode>(cnode(expression(), iter->value()));
+        iter++; // eat jump
+        return std::make_optional<std::unique_ptr<node>>(std::move(result));
+      } else {
+        auto result = std::make_unique<cnode>(cnode(expression()));
+        return std::make_optional<std::unique_ptr<node>>(std::move(result));
+      }
+    }
+  }
+};
+
 class parser {
 public:
   std::list<std::unique_ptr<node>> parse(std::list<token> tokens) {
@@ -119,35 +159,11 @@ public:
         continue;
       }
 
-      if (iter->type() == token::type::symbol && std::next(iter, 1)->type() == token::type::assign) {
-        token first = *iter;
-        iter++; // eat symbol
-        iter++; // eat =
-        expression_parser ep;
-        auto exp = ep.parse(iter);
-        if (exp == std::nullopt) {
-          throw std::runtime_error("error");
-        }
-        if (iter->type() == token::type::semicolon) {
-          iter++; // eat semicolon
-          nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression(), iter->value())));
-          iter++; // eat jump
-        } else {
-          nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
-        }
-      } else {
-        expression_parser ep;
-        auto exp = ep.parse(iter);
-        if (exp == std::nullopt) {
-          throw std::runtime_error("error");
-        }
-        if (iter->type() == token::type::semicolon) {
-          iter++; // eat semicolon
-          nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
-          iter++; // eat jump
-        } else {
-          nodes.push_back(std::make_unique<cnode>(cnode(expression())));
-        }
+      cparser c;
+      auto cparsed = c.parse(iter);
+      if (cparsed != std::nullopt) {
+        nodes.push_back(std::move(*cparsed));
+        continue;
       }
     }
     return nodes;
