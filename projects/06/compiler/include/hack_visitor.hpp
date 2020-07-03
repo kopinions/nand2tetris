@@ -21,6 +21,10 @@ public:
 
   };
 
+  virtual void visit(label *){
+
+  };
+
   virtual void visit(expression *){
 
   };

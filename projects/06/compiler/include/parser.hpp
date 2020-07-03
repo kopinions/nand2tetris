@@ -146,6 +146,21 @@ public:
   }
 };
 
+class label_parser : public iparser<token, node> {
+public:
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    if (iter->type() == token::type::lparen && std::next(iter, 1)->type() == token::type::symbol &&
+        std::next(iter, 2)->type() == token::type::rparen) {
+      iter++; // eat (
+      auto result = std::make_unique<label>(label(iter->value()));
+      iter++; // eat symbol
+      iter++; // eat )
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    }
+    return std::nullopt;
+  }
+};
+
 class parser {
 public:
   std::list<std::unique_ptr<node>> parse(std::list<token> tokens) {
@@ -163,6 +178,13 @@ public:
       auto cparsed = c.parse(iter);
       if (cparsed != std::nullopt) {
         nodes.push_back(std::move(*cparsed));
+        continue;
+      }
+
+      label_parser l;
+      auto lparsed = l.parse(iter);
+      if (lparsed != std::nullopt) {
+        nodes.push_back(std::move(*lparsed));
         continue;
       }
     }

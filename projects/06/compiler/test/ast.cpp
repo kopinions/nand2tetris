@@ -127,6 +127,16 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_computation_only) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
+TEST(tokenizer, should_able_to_parse_the_label) {
+  tokenizer to;
+  std::list<token> tokens = to.tokenize("(LABEL)");
+  parser parser;
+  std::list<std::unique_ptr<node>> nodes = parser.parse(tokens);
+  ASSERT_THAT(nodes.size(), testing::Eq(1));
+  auto a = dynamic_cast<label *>(nodes.front().get());
+  ASSERT_THAT(a, testing::NotNull());
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

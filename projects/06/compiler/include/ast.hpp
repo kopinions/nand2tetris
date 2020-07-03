@@ -23,16 +23,15 @@ private:
   std::string _symbol;
 };
 
-class expression: public node {
+class expression : public node {
 public:
   virtual void accept(visitor visitor) { visitor.visit(this); }
 };
 
 class unary : public expression {
 public:
-  unary(std::string op, std::string symbol) :_op(op), _symbol(symbol) {
+  unary(std::string op, std::string symbol) : _op(op), _symbol(symbol) {}
 
-  }
 private:
   std::string _op;
   std::string _symbol;
@@ -40,30 +39,40 @@ private:
 
 class binary : public expression {
 public:
-  binary(std::string operand1, std::string op, std::string symbol) :_operand1(operand1), _op(op), _symbol(symbol) {
+  binary(std::string operand1, std::string op, std::string symbol) : _operand1(operand1), _op(op), _symbol(symbol) {}
 
-  }
 private:
   std::string _operand1;
   std::string _op;
   std::string _symbol;
 };
 
-class number: public node {
+class label : public node {
 public:
-  number(int number) : _number(number) {};
+  label(std::string name) : _name(name){};
   virtual void accept(visitor visitor) { visitor.visit(this); }
+
+private:
+  std::string _name;
+};
+
+class number : public node {
+public:
+  number(int number) : _number(number){};
+  virtual void accept(visitor visitor) { visitor.visit(this); }
+
 private:
   int _number;
 };
 
 class cnode : public node {
 public:
-  cnode(expression e): _dest(""), _expression(e), _jmp("") {};
-  cnode(expression e, std::string jmp): _dest(""), _expression(e), _jmp(jmp) {};
-  cnode(std::string dest, expression e): _dest(dest), _expression(e), _jmp("") {};
-  cnode(std::string dest, expression e, std::string jmp): _dest(dest), _expression(e), _jmp(jmp) {};
+  cnode(expression e) : _dest(""), _expression(e), _jmp(""){};
+  cnode(expression e, std::string jmp) : _dest(""), _expression(e), _jmp(jmp){};
+  cnode(std::string dest, expression e) : _dest(dest), _expression(e), _jmp(""){};
+  cnode(std::string dest, expression e, std::string jmp) : _dest(dest), _expression(e), _jmp(jmp){};
   virtual void accept(visitor visitor) { visitor.visit(this); }
+
 private:
   std::string _dest;
   expression _expression;
