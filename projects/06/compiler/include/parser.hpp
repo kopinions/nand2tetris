@@ -30,6 +30,51 @@ public:
   };
 };
 
+class unary_expression_parser : public iparser<token, node> {
+public:
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    if (!iter->is_operator() && iter->type() != token::type::number) {
+      return std::nullopt;
+    }
+
+    if (iter->is_operator()) {
+      if (std::next(iter, 1)->type() != token::type::symbol && std::next(iter, 1)->type() != token::type::number) {
+        return std::nullopt;
+      }
+
+      if (std::next(iter, 2)->type() != token::type::semicolon) {
+        return std::nullopt;
+      }
+
+      token op = *iter;
+      iter++; // eat op
+      token operand = *iter;
+      iter++; // eat symbol/number
+      iter++; // eat semicolon
+      token jmp = *iter;
+      auto result = std::make_unique<cnode>(cnode(expression(), iter->value()));
+      iter++; // eat jump
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    }
+
+    if (iter->type() == token::type::number) {
+      if (std::next(iter, 1)->type() != token::type::semicolon || std::next(iter, 2)->type() != token::type::symbol) {
+        return std::nullopt;
+      }
+
+      token number = *iter;
+      iter++; // eat number
+      iter++; // eat semicolon
+      token jmp = *iter;
+      auto result = std::make_unique<cnode>(cnode(expression(), iter->value()));
+      iter++; // eat jump
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    }
+
+    return std::nullopt;
+  };
+};
+
 class parser {
 public:
   std::list<std::unique_ptr<node>> parse(std::list<token> tokens) {
@@ -105,39 +150,11 @@ public:
         continue;
       }
 
-      if (is_operator(*iter)) {
-        token op = *iter;
-        iter++; // eat op
-        if (iter->type() != token::type::symbol && iter->type() != token::type::number) {
-          throw std::runtime_error("Expect symbol but found " + std::to_string(iter->type()));
-        }
-        token operand = *iter;
-        iter++; // eat symbol/number
-
-        if (iter->type() != token::type::semicolon) {
-          throw std::runtime_error("Expect semicolon but found " + std::to_string(iter->type()));
-        }
-        iter++; // eat semicolon
-        token jmp = *iter;
-        nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
-        iter++; // eat jump
+      unary_expression_parser unary_ep;
+      auto unary_expression_parsed = unary_ep.parse(iter);
+      if (unary_expression_parsed != std::nullopt) {
+        nodes.push_back(std::move(*unary_expression_parsed));
         continue;
-      }
-
-      if (iter->type() == token::type::number) {
-        token number = *iter;
-        iter++; // eat number
-        if (iter->type() != token::type::semicolon) {
-          throw std::runtime_error("Expect semicolon but found " + std::to_string(iter->type()));
-        }
-        iter++; // eat semicolon
-        if (iter->type() != token::type::symbol) {
-          throw std::runtime_error("Expect symbol but found " + std::to_string(iter->type()));
-        }
-
-        token jmp = *iter;
-        nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
-        iter++; // eat jump
       }
     }
     return nodes;
