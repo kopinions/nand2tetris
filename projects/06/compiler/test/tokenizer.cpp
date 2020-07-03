@@ -25,6 +25,20 @@ TEST(tokenizer, should_able_to_get_symbol) {
   ASSERT_THAT(toks.front().value(), testing::Eq("SYMBOL"));
 }
 
+TEST(tokenizer, should_able_to_get_the_label) {
+  tokenizer to;
+  std::list<token> toks = to.tokenize("(SYMBOL)");
+  ASSERT_THAT(toks.size(), 3);
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::lparen));
+  toks.pop_front();
+
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::symbol));
+  ASSERT_THAT(toks.front().value(), testing::Eq("SYMBOL"));
+
+  toks.pop_front();
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::rparen));
+}
+
 TEST(tokenizer, should_able_to_parse_a_instruction) {
   tokenizer to;
   std::list<token> toks = to.tokenize("@SYMBOL");

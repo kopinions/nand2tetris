@@ -78,6 +78,12 @@ public:
       case '&':
         tokens.push_back(token(token::type::ampersand));
         continue;
+      case '(':
+        tokens.push_back(token(token::type::lparen));
+        continue;
+      case ')':
+        tokens.push_back(token(token::type::rparen));
+        continue;
       default:
         std::cerr << "Unrecognized operator:"
                   << "'" << *iter << "'" << std::endl;
