@@ -5,22 +5,41 @@
 #include <iostream>
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
+
+template <typename F, typename T> class iparser {
+public:
+  virtual std::optional<std::unique_ptr<T>> parse(typename std::list<F>::iterator &) = 0;
+  virtual ~iparser() = default;
+};
+
+class aparser : public iparser<token, node> {
+public:
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    if (iter->type() == token::type::at &&
+        (std::next(iter, 1)->type() == token::type::number || std::next(iter, 1)->type() == token::type::symbol)) {
+      iter++; // eat at
+      auto res = iter->type() == token::type::number ? std::make_unique<anode>(anode(std::stoi(iter->value())))
+                                                     : std::make_unique<anode>(anode(iter->value()));
+      iter++; // eat symbol/number
+      return std::make_optional<std::unique_ptr<node>>(std::move(res));
+    }
+
+    return std::nullopt;
+  };
+};
 
 class parser {
 public:
   std::list<std::unique_ptr<node>> parse(std::list<token> tokens) {
     std::list<std::unique_ptr<node>> nodes;
     for (auto iter = tokens.begin(); iter != tokens.end();) {
-      if (iter->type() == token::type::at) {
-        iter++; // eat at
-        if (iter->type() == token::type::number) {
-          nodes.push_back(
-              std::make_unique<anode>(anode(std::stoi(iter->value()))));
-        } else {
-          nodes.push_back(std::make_unique<anode>(anode(iter->value())));
-        }
-        iter++; // eat symbol or number
+      aparser a;
+      auto parsed = a.parse(iter);
+      // TODO changed to whether the iter advanced
+      if (parsed != std::nullopt) {
+        nodes.push_back(std::move(*parsed));
         continue;
       }
 
@@ -38,12 +57,10 @@ public:
             iter++; // eat operand
 
             if (iter->type() == token::type::semicolon) {
-              nodes.push_back(std::make_unique<cnode>(
-                  cnode(first.value(), expression(), iter->value())));
+              nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression(), iter->value())));
               iter++; // eat jump
             } else {
-              nodes.push_back(
-                  std::make_unique<cnode>(cnode(first.value(), expression())));
+              nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
             }
             continue;
           } else {
@@ -53,29 +70,24 @@ public:
 
           if (iter->type() == token::type::semicolon) {
             iter++; // eat semicolon
-            nodes.push_back(std::make_unique<cnode>(
-                cnode(first.value(), expression(), iter->value())));
+            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression(), iter->value())));
             iter++; // eat jump
           } else if (is_operator(*iter)) {
             token op = *iter;
             iter++; // eat op
             token operand = *iter;
-            nodes.push_back(
-                std::make_unique<cnode>(cnode(first.value(), expression())));
+            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
             iter++; // eat operand
           } else if (iter->type() == token::type::number) {
             // D=1
-            nodes.push_back(
-                std::make_unique<cnode>(cnode(first.value(), expression())));
+            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
             iter++; // eat number
           } else {
-            nodes.push_back(
-                std::make_unique<cnode>(cnode(first.value(), expression())));
+            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
           }
         } else if (iter->type() == token::type::semicolon) {
           iter++; // eat ;
-          nodes.push_back(
-              std::make_unique<cnode>(cnode(expression(), iter->value())));
+          nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
           iter++; // eat jump
         } else if (is_operator(*iter)) {
           token op = *iter;
@@ -86,8 +98,7 @@ public:
 
           if (iter->type() == token::type::semicolon) {
             iter++; // eat ;
-            nodes.push_back(
-                std::make_unique<cnode>(cnode(expression(), iter->value())));
+            nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
             iter++; // eat jump
           }
         }
@@ -97,22 +108,18 @@ public:
       if (is_operator(*iter)) {
         token op = *iter;
         iter++; // eat op
-        if (iter->type() != token::type::symbol &&
-            iter->type() != token::type::number) {
-          throw std::runtime_error("Expect symbol but found " +
-                                   std::to_string(iter->type()));
+        if (iter->type() != token::type::symbol && iter->type() != token::type::number) {
+          throw std::runtime_error("Expect symbol but found " + std::to_string(iter->type()));
         }
         token operand = *iter;
         iter++; // eat symbol/number
 
         if (iter->type() != token::type::semicolon) {
-          throw std::runtime_error("Expect semicolon but found " +
-                                   std::to_string(iter->type()));
+          throw std::runtime_error("Expect semicolon but found " + std::to_string(iter->type()));
         }
         iter++; // eat semicolon
         token jmp = *iter;
-        nodes.push_back(
-            std::make_unique<cnode>(cnode(expression(), iter->value())));
+        nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
         iter++; // eat jump
         continue;
       }
@@ -121,18 +128,15 @@ public:
         token number = *iter;
         iter++; // eat number
         if (iter->type() != token::type::semicolon) {
-          throw std::runtime_error("Expect semicolon but found " +
-                                   std::to_string(iter->type()));
+          throw std::runtime_error("Expect semicolon but found " + std::to_string(iter->type()));
         }
         iter++; // eat semicolon
         if (iter->type() != token::type::symbol) {
-          throw std::runtime_error("Expect symbol but found " +
-                                   std::to_string(iter->type()));
+          throw std::runtime_error("Expect symbol but found " + std::to_string(iter->type()));
         }
 
         token jmp = *iter;
-        nodes.push_back(
-            std::make_unique<cnode>(cnode(expression(), iter->value())));
+        nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
         iter++; // eat jump
       }
     }
