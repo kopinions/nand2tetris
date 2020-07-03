@@ -28,6 +28,35 @@ public:
   virtual void accept(visitor visitor) { visitor.visit(this); }
 };
 
+class unary : public expression {
+public:
+  unary(std::string op, std::string symbol) :_op(op), _symbol(symbol) {
+
+  }
+private:
+  std::string _op;
+  std::string _symbol;
+};
+
+class binary : public expression {
+public:
+  binary(std::string operand1, std::string op, std::string symbol) :_operand1(operand1), _op(op), _symbol(symbol) {
+
+  }
+private:
+  std::string _operand1;
+  std::string _op;
+  std::string _symbol;
+};
+
+class number: public node {
+public:
+  number(int number) : _number(number) {};
+  virtual void accept(visitor visitor) { visitor.visit(this); }
+private:
+  int _number;
+};
+
 class cnode : public node {
 public:
   cnode(expression e): _dest(""), _expression(e), _jmp("") {};

@@ -47,8 +47,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_computation_with_jump) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer,
-     should_able_to_parse_c_instruction_complex_computation_with_jump) {
+TEST(tokenizer, should_able_to_parse_c_instruction_complex_computation_with_jump) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("D-1;JLE");
   parser parser;
@@ -58,8 +57,7 @@ TEST(tokenizer,
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer,
-     should_able_to_parse_c_instruction_unary_computation_with_jump) {
+TEST(tokenizer, should_able_to_parse_c_instruction_unary_computation_with_jump) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("!D;JLE");
   parser parser;
@@ -99,8 +97,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_computation) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer,
-     should_able_to_parse_c_instruction_with_dest_and_complex_computation) {
+TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_complex_computation) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("D=A+1");
   parser parser;
@@ -110,9 +107,7 @@ TEST(tokenizer,
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(
-    tokenizer,
-    should_able_to_parse_c_instruction_with_dest_and_unary_complex_computation) {
+TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_unary_complex_computation) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("M=!A");
   parser parser;

@@ -30,7 +30,83 @@ public:
   };
 };
 
+class const_expression_parser : public iparser<token, node> {
+public:
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    if (iter->type() == token::type::hyphen && std::next(iter, 1)->type() == token::type::number) {
+      iter++; // eat hyphen
+      auto result = std::make_unique<number>(number(0 - std::stoi(iter->value())));
+      iter++; // eat number
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    } else if (iter->type() == token::type::number) {
+      auto result = std::make_unique<number>(number(std::stoi(iter->value())));
+      iter++; // eat number
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    } else {
+      return std::nullopt;
+    }
+  }
+};
+
 class unary_expression_parser : public iparser<token, node> {
+public:
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    if (iter->is_operator() && std::next(iter, 1)->type() == token::type::symbol) {
+      token op = *iter;
+      iter++; // eat operator
+      auto result = std::make_unique<unary>(unary(op.value(), iter->value()));
+      iter++; // eat symbol
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    } else if (iter->type() == token::type::symbol) {
+      auto result = std::make_unique<unary>(unary("", iter->value()));
+      iter++; // eat symbol
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    } else {
+      return std::nullopt;
+    }
+  }
+};
+
+class binary_expression_parser : public iparser<token, node> {
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    if (iter->type() == token::type::symbol && std::next(iter, 1)->is_operator() &&
+        (std::next(iter, 2)->type() == token::type::symbol || std::next(iter, 2)->type() == token::type::number)) {
+      token operand1 = *iter;
+      iter++; // eat operand1
+      token op = *iter;
+      iter++; // eat op
+      auto result = std::make_unique<binary>(binary(operand1.value(), op.value(), iter->value()));
+      iter++; // eat operand2
+      return std::make_optional<std::unique_ptr<node>>(std::move(result));
+    } else {
+      return std::nullopt;
+    }
+  }
+};
+
+class expression_parser : public iparser<token, node> {
+public:
+  expression_parser() : _parsers() {
+    _parsers.push_back(new const_expression_parser());
+    _parsers.push_back(new binary_expression_parser());
+    _parsers.push_back(new unary_expression_parser());
+  }
+
+  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
+    for (auto pit = _parsers.begin(); pit != _parsers.end(); ++pit) {
+      auto parsed = (*pit)->parse(iter);
+      if (parsed != std::nullopt) {
+        return parsed;
+      }
+    }
+    return std::nullopt;
+  }
+
+private:
+  std::list<iparser<token, node> *> _parsers;
+};
+
+class unary_c_instruction : public iparser<token, node> {
 public:
   virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
     if (!iter->is_operator() && iter->type() != token::type::number) {
@@ -94,39 +170,15 @@ public:
 
         if (iter->type() == token::type::assign) {
           iter++; // eat =
-          if (is_operator(*iter)) {
-            // compute expression is unary expression
-            token op = *iter;
-            iter++;
-            token operand = *iter;
-            iter++; // eat operand
-
-            if (iter->type() == token::type::semicolon) {
-              nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression(), iter->value())));
-              iter++; // eat jump
-            } else {
-              nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
-            }
-            continue;
-          } else {
-            auto compute = *iter;
-            iter++; // eat first compute
+          expression_parser ep;
+          auto exp = ep.parse(iter);
+          if (exp == std::nullopt) {
+            throw std::runtime_error("error");
           }
-
           if (iter->type() == token::type::semicolon) {
             iter++; // eat semicolon
             nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression(), iter->value())));
             iter++; // eat jump
-          } else if (is_operator(*iter)) {
-            token op = *iter;
-            iter++; // eat op
-            token operand = *iter;
-            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
-            iter++; // eat operand
-          } else if (iter->type() == token::type::number) {
-            // D=1
-            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
-            iter++; // eat number
           } else {
             nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
           }
@@ -150,10 +202,10 @@ public:
         continue;
       }
 
-      unary_expression_parser unary_ep;
-      auto unary_expression_parsed = unary_ep.parse(iter);
-      if (unary_expression_parsed != std::nullopt) {
-        nodes.push_back(std::move(*unary_expression_parsed));
+      unary_c_instruction unary_c;
+      auto unary_c_pasted = unary_c.parse(iter);
+      if (unary_c_pasted != std::nullopt) {
+        nodes.push_back(std::move(*unary_c_pasted));
         continue;
       }
     }

@@ -1,7 +1,7 @@
 #ifndef HACK_VISITOR_HPP
 #define HACK_VISITOR_HPP
-#include "visitor.hpp"
 #include "reporter.hpp"
+#include "visitor.hpp"
 #include <memory>
 
 class hack_visitor : public visitor {
@@ -16,7 +16,11 @@ public:
   virtual void visit(cnode *){
 
   };
- 
+
+  virtual void visit(number *){
+
+  };
+
   virtual void visit(expression *){
 
   };
