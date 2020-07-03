@@ -106,51 +106,6 @@ private:
   std::list<iparser<token, node> *> _parsers;
 };
 
-class unary_c_instruction : public iparser<token, node> {
-public:
-  virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
-    if (!iter->is_operator() && iter->type() != token::type::number) {
-      return std::nullopt;
-    }
-
-    if (iter->is_operator()) {
-      if (std::next(iter, 1)->type() != token::type::symbol && std::next(iter, 1)->type() != token::type::number) {
-        return std::nullopt;
-      }
-
-      if (std::next(iter, 2)->type() != token::type::semicolon) {
-        return std::nullopt;
-      }
-
-      token op = *iter;
-      iter++; // eat op
-      token operand = *iter;
-      iter++; // eat symbol/number
-      iter++; // eat semicolon
-      token jmp = *iter;
-      auto result = std::make_unique<cnode>(cnode(expression(), iter->value()));
-      iter++; // eat jump
-      return std::make_optional<std::unique_ptr<node>>(std::move(result));
-    }
-
-    if (iter->type() == token::type::number) {
-      if (std::next(iter, 1)->type() != token::type::semicolon || std::next(iter, 2)->type() != token::type::symbol) {
-        return std::nullopt;
-      }
-
-      token number = *iter;
-      iter++; // eat number
-      iter++; // eat semicolon
-      token jmp = *iter;
-      auto result = std::make_unique<cnode>(cnode(expression(), iter->value()));
-      iter++; // eat jump
-      return std::make_optional<std::unique_ptr<node>>(std::move(result));
-    }
-
-    return std::nullopt;
-  };
-};
-
 class parser {
 public:
   std::list<std::unique_ptr<node>> parse(std::list<token> tokens) {
@@ -164,66 +119,38 @@ public:
         continue;
       }
 
-      if (iter->type() == token::type::symbol) {
+      if (iter->type() == token::type::symbol && std::next(iter, 1)->type() == token::type::assign) {
         token first = *iter;
         iter++; // eat symbol
-
-        if (iter->type() == token::type::assign) {
-          iter++; // eat =
-          expression_parser ep;
-          auto exp = ep.parse(iter);
-          if (exp == std::nullopt) {
-            throw std::runtime_error("error");
-          }
-          if (iter->type() == token::type::semicolon) {
-            iter++; // eat semicolon
-            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression(), iter->value())));
-            iter++; // eat jump
-          } else {
-            nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
-          }
-        } else if (iter->type() == token::type::semicolon) {
-          iter++; // eat ;
+        iter++; // eat =
+        expression_parser ep;
+        auto exp = ep.parse(iter);
+        if (exp == std::nullopt) {
+          throw std::runtime_error("error");
+        }
+        if (iter->type() == token::type::semicolon) {
+          iter++; // eat semicolon
+          nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression(), iter->value())));
+          iter++; // eat jump
+        } else {
+          nodes.push_back(std::make_unique<cnode>(cnode(first.value(), expression())));
+        }
+      } else {
+        expression_parser ep;
+        auto exp = ep.parse(iter);
+        if (exp == std::nullopt) {
+          throw std::runtime_error("error");
+        }
+        if (iter->type() == token::type::semicolon) {
+          iter++; // eat semicolon
           nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
           iter++; // eat jump
-        } else if (is_operator(*iter)) {
-          token op = *iter;
-          iter++; // eat op
-          token rhs = *iter;
-
-          iter++; // eat rhs
-
-          if (iter->type() == token::type::semicolon) {
-            iter++; // eat ;
-            nodes.push_back(std::make_unique<cnode>(cnode(expression(), iter->value())));
-            iter++; // eat jump
-          }
+        } else {
+          nodes.push_back(std::make_unique<cnode>(cnode(expression())));
         }
-        continue;
-      }
-
-      unary_c_instruction unary_c;
-      auto unary_c_pasted = unary_c.parse(iter);
-      if (unary_c_pasted != std::nullopt) {
-        nodes.push_back(std::move(*unary_c_pasted));
-        continue;
       }
     }
     return nodes;
-  }
-
-private:
-  bool is_operator(token t) {
-    switch (t.type()) {
-    case token::type::plus:
-    case token::type::hyphen:
-    case token::type::ampersand:
-    case token::type::vbar:
-    case token::type::exclamation:
-      return true;
-    default:
-      return false;
-    }
   }
 };
 #endif // PARSER_HPP
