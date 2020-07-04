@@ -5,7 +5,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-TEST(tokenizer, should_able_to_parse_a_instruction) {
+TEST(ast, should_able_to_parse_a_instruction) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("@111");
   parser parser;
@@ -16,7 +16,7 @@ TEST(tokenizer, should_able_to_parse_a_instruction) {
   ASSERT_THAT(a->address(), testing::Eq(111));
 }
 
-TEST(tokenizer, should_able_to_parse_a_instruction_with_symbol) {
+TEST(ast, should_able_to_parse_a_instruction_with_symbol) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("@SYMBOL");
   parser parser;
@@ -27,7 +27,7 @@ TEST(tokenizer, should_able_to_parse_a_instruction_with_symbol) {
   ASSERT_THAT(a->address(), testing::Eq(-1));
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction) {
+TEST(ast, should_able_to_parse_c_instruction) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("MD=D;JLE");
   parser parser;
@@ -37,7 +37,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_computation_with_jump) {
+TEST(ast, should_able_to_parse_c_instruction_computation_with_jump) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("M;JLE");
   parser parser;
@@ -47,7 +47,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_computation_with_jump) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_complex_computation_with_jump) {
+TEST(ast, should_able_to_parse_c_instruction_complex_computation_with_jump) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("D-1;JLE");
   parser parser;
@@ -57,7 +57,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_complex_computation_with_jump
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_unary_computation_with_jump) {
+TEST(ast, should_able_to_parse_c_instruction_unary_computation_with_jump) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("!D;JLE");
   parser parser;
@@ -67,7 +67,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_unary_computation_with_jump) 
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_with_fix_conditional_jump) {
+TEST(ast, should_able_to_parse_c_instruction_with_fix_conditional_jump) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("-1;JLT");
   parser parser;
@@ -77,7 +77,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_fix_conditional_jump) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_with_unconditional_jump) {
+TEST(ast, should_able_to_parse_c_instruction_with_unconditional_jump) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("0;JMP");
   parser parser;
@@ -87,7 +87,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_unconditional_jump) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_computation) {
+TEST(ast, should_able_to_parse_c_instruction_with_dest_and_computation) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("MD=D");
   parser parser;
@@ -97,7 +97,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_computation) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_complex_computation) {
+TEST(ast, should_able_to_parse_c_instruction_with_dest_and_complex_computation) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("D=A+1");
   parser parser;
@@ -107,7 +107,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_complex_computa
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_unary_complex_computation) {
+TEST(ast, should_able_to_parse_c_instruction_with_dest_and_unary_complex_computation) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("M=!A");
   parser parser;
@@ -117,7 +117,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_dest_and_unary_complex_c
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_c_instruction_with_computation_only) {
+TEST(ast, should_able_to_parse_c_instruction_with_computation_only) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("D=1");
   parser parser;
@@ -127,7 +127,7 @@ TEST(tokenizer, should_able_to_parse_c_instruction_with_computation_only) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-TEST(tokenizer, should_able_to_parse_the_label) {
+TEST(ast, should_able_to_parse_the_label) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("(LABEL)");
   parser parser;
@@ -137,7 +137,3 @@ TEST(tokenizer, should_able_to_parse_the_label) {
   ASSERT_THAT(a, testing::NotNull());
 }
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

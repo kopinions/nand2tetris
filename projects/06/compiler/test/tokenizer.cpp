@@ -121,7 +121,4 @@ TEST(tokenizer, should_able_to_bypass_white_space) {
   ASSERT_THAT(toks.size(), 0);
 }
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+

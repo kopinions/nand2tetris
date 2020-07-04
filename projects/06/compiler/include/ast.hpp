@@ -17,6 +17,7 @@ public:
   virtual void accept(std::shared_ptr<visitor> v) { v->visit(this); }
   void relocate(int address) { this->_address = address; }
   int address() { return _address; }
+  std::string symbol() { return _symbol; }
 
 private:
   int _address;

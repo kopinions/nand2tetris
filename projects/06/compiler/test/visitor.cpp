@@ -6,7 +6,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-TEST(visitor_test, should_able_to_generate_a_construction) {
+TEST(visitor, should_able_to_generate_a_construction) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("@7");
   parser parser;
@@ -15,9 +15,4 @@ TEST(visitor_test, should_able_to_generate_a_construction) {
   auto v = std::make_shared<hack_visitor>(reporter);
   EXPECT_CALL(*reporter, report("000000000000111")).Times(1);
   nodes.front()->accept(v);
-}
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }
