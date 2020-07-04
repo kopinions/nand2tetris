@@ -49,7 +49,7 @@ public:
         std::string symbol;
         symbol += *iter;
         iter++;
-        while (std::isalnum(*iter) || *iter == '_') {
+        while (std::isalnum(*iter) || *iter == '_' || *iter == '$' || *iter =='.') {
           symbol += *iter;
           iter++;
         }

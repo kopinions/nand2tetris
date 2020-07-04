@@ -33,6 +33,14 @@ TEST(tokenizer, should_able_to_get_symbol_with_underscore) {
   ASSERT_THAT(toks.front().value(), testing::Eq("SYMBOL_A"));
 }
 
+TEST(tokenizer, should_able_to_get_symbol_with_dot_and_dollar) {
+    tokenizer to;
+    std::list<token> toks = to.tokenize("ball.setdestination$if_true0");
+    ASSERT_THAT(toks.size(), 1);
+    ASSERT_THAT(toks.front().type(), testing::Eq(token::type::symbol));
+    ASSERT_THAT(toks.front().value(), testing::Eq("ball.setdestination$if_true0"));
+}
+
 TEST(tokenizer, should_able_to_get_the_label) {
   tokenizer to;
   std::list<token> toks = to.tokenize("(SYMBOL)");
