@@ -35,11 +35,11 @@ public:
   virtual std::optional<std::unique_ptr<node>> parse(std::list<token>::iterator &iter) {
     if (iter->type() == token::type::hyphen && std::next(iter, 1)->type() == token::type::number) {
       iter++; // eat hyphen
-      auto result = std::make_unique<number>(number(0 - std::stoi(iter->value())));
+      auto result = std::make_unique<constant>(constant(0 - std::stoi(iter->value())));
       iter++; // eat number
       return std::make_optional<std::unique_ptr<node>>(std::move(result));
     } else if (iter->type() == token::type::number) {
-      auto result = std::make_unique<number>(number(std::stoi(iter->value())));
+      auto result = std::make_unique<constant>(constant(std::stoi(iter->value())));
       iter++; // eat number
       return std::make_optional<std::unique_ptr<node>>(std::move(result));
     } else {
@@ -120,11 +120,11 @@ public:
       }
       if (iter->type() == token::type::semicolon) {
         iter++; // eat semicolon
-        auto result = std::make_unique<cnode>(cnode(first.value(), expression(), iter->value()));
+        auto result = std::make_unique<cnode>(cnode(first.value(), std::move(*exp), iter->value()));
         iter++; // eat jump
         return std::make_optional<std::unique_ptr<node>>(std::move(result));
       } else {
-        auto result = std::make_unique<cnode>(cnode(first.value(), expression(), iter->value()));
+        auto result = std::make_unique<cnode>(cnode(first.value(), std::move(*exp)));
         return std::make_optional<std::unique_ptr<node>>(std::move(result));
       }
     } else {
@@ -135,11 +135,11 @@ public:
       }
       if (iter->type() == token::type::semicolon) {
         iter++; // eat semicolon
-        auto result = std::make_unique<cnode>(cnode(expression(), iter->value()));
+        auto result = std::make_unique<cnode>(cnode(std::move(*exp), iter->value()));
         iter++; // eat jump
         return std::make_optional<std::unique_ptr<node>>(std::move(result));
       } else {
-        auto result = std::make_unique<cnode>(cnode(expression()));
+        auto result = std::make_unique<cnode>(cnode(std::move(*exp)));
         return std::make_optional<std::unique_ptr<node>>(std::move(result));
       }
     }

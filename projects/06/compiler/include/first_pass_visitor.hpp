@@ -17,7 +17,14 @@ public:
 
   virtual void visit(cnode *) { _pc++; };
 
-  virtual void visit(number *){
+  virtual void visit(constant *){
+
+  };
+  virtual void visit(unary *){
+
+  };
+
+  virtual void visit(binary *){
 
   };
 

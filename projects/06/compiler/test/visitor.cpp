@@ -20,7 +20,7 @@ TEST(visitor, should_able_to_generate_a_construction) {
   nodes.front()->accept(v);
 }
 
-TEST(visitor, should_able_to_generate_a_instruction_with_) {
+TEST(visitor, should_able_to_generate_a_instruction_with_at_label) {
   tokenizer to;
   std::list<token> tokens = to.tokenize("@AA\n"
                                         "D=M\n"
@@ -37,8 +37,56 @@ TEST(visitor, should_able_to_generate_a_instruction_with_) {
   }
 
   auto reporter = std::make_shared<mock_reporter>();
-  EXPECT_CALL(*reporter, report("000000000000010")).Times(1);
+  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("000000000000010"), testing::Eq("1110101110000000"),
+                                               testing::Eq("1110100110000000")))).Times(3);
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
+
+  for (auto it = nodes.begin(); it != nodes.end(); it++) {
+    (*it)->accept(v);
+  }
+}
+
+TEST(visitor, should_able_to_generate_a_instruction_with_at_variable) {
+  tokenizer to;
+  std::list<token> tokens = to.tokenize("@AA\n"
+                                        "D=M\n"
+                                        "D=A");
+  parser parser;
+  std::list<std::unique_ptr<node>> nodes = parser.parse(tokens);
+
+  auto ctx = std::make_shared<context>();
+  auto first_pass = std::make_shared<first_pass_visitor>(ctx);
+
+  for (auto it = nodes.begin(); it != nodes.end(); it++) {
+    (*it)->accept(first_pass);
+  }
+
+  auto reporter = std::make_shared<mock_reporter>();
+  auto v = std::make_shared<hack_visitor>(reporter, ctx);
+  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("000000000010001"), testing::Eq("1110101110000000"),
+                                               testing::Eq("1110100110000000")))).Times(3);
+
+  for (auto it = nodes.begin(); it != nodes.end(); it++) {
+    (*it)->accept(v);
+  }
+}
+
+TEST(visitor, should_able_to_generate_c_instruction) {
+  tokenizer to;
+  std::list<token> tokens = to.tokenize("M=D+1;JMP");
+  parser parser;
+  std::list<std::unique_ptr<node>> nodes = parser.parse(tokens);
+
+  auto ctx = std::make_shared<context>();
+  auto first_pass = std::make_shared<first_pass_visitor>(ctx);
+
+  for (auto it = nodes.begin(); it != nodes.end(); it++) {
+    (*it)->accept(first_pass);
+  }
+
+  auto reporter = std::make_shared<mock_reporter>();
+  auto v = std::make_shared<hack_visitor>(reporter, ctx);
+  EXPECT_CALL(*reporter, report("1110010011111111")).Times(1);
 
   for (auto it = nodes.begin(); it != nodes.end(); it++) {
     (*it)->accept(v);

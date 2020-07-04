@@ -58,31 +58,31 @@ public:
 
       switch (*iter) {
       case '=':
-        tokens.push_back(token(token::type::assign));
+        tokens.push_back(token(token::type::assign, "="));
         continue;
       case '+':
-        tokens.push_back(token(token::type::plus));
+        tokens.push_back(token(token::type::plus, "+"));
         continue;
       case '-':
-        tokens.push_back(token(token::type::hyphen));
+        tokens.push_back(token(token::type::hyphen, "-"));
         continue;
       case '!':
-        tokens.push_back(token(token::type::exclamation));
+        tokens.push_back(token(token::type::exclamation, "!"));
         continue;
       case '|':
-        tokens.push_back(token(token::type::vbar));
+        tokens.push_back(token(token::type::vbar, "|"));
         continue;
       case ';':
-        tokens.push_back(token(token::type::semicolon));
+        tokens.push_back(token(token::type::semicolon, ";"));
         continue;
       case '&':
-        tokens.push_back(token(token::type::ampersand));
+        tokens.push_back(token(token::type::ampersand, "&"));
         continue;
       case '(':
-        tokens.push_back(token(token::type::lparen));
+        tokens.push_back(token(token::type::lparen, "("));
         continue;
       case ')':
-        tokens.push_back(token(token::type::rparen));
+        tokens.push_back(token(token::type::rparen, ")"));
         continue;
       default:
         std::cerr << "Unrecognized operator:"
