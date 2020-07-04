@@ -15,9 +15,7 @@ public:
     _pc++;
   };
 
-  virtual void visit(cnode *){
-
-  };
+  virtual void visit(cnode *){ _pc++; };
 
   virtual void visit(number *){
 
@@ -31,7 +29,6 @@ public:
     } else {
       std::cerr << "error" << std::endl;
     }
-    _pc++;
   };
 
   virtual void visit(expression *){
