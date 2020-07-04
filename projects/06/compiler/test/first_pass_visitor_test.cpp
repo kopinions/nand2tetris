@@ -53,6 +53,8 @@ TEST(first_pass_visitor_test, should_not_count_the_label_node_to_the_instruction
                                         "D=A\n"
                                         "(AA)\n"
                                         "M=A\n"
+                                        "@CC\n"
+                                        "M=D\n"
                                         "(BB)\n"
                                         "D=A");
   parser parser;
@@ -63,5 +65,6 @@ TEST(first_pass_visitor_test, should_not_count_the_label_node_to_the_instruction
     (*it)->accept(v);
   }
 
-  ASSERT_THAT(*(ctx->defined("BB")), testing::Eq(3));
+  ASSERT_THAT(*(ctx->defined("BB")), testing::Eq(5));
+  ASSERT_THAT(*(ctx->defined("CC")), testing::Eq(17));
 }
