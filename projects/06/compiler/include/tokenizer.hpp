@@ -11,8 +11,8 @@ public:
     std::list<token> tokens;
 
     for (auto iter = code.begin(); iter != code.end(); iter++) {
-      while (std::isspace(*iter)) {
-        iter++;
+      if (std::isspace(*iter)) {
+        continue;
       }
 
       if (*iter == '/') {
@@ -48,8 +48,10 @@ public:
       if (std::isalpha(*iter)) {
         std::string symbol;
         symbol += *iter;
-        while (std::isalnum(*(++iter))) {
+        iter++;
+        while (std::isalnum(*iter) || *iter == '_') {
           symbol += *iter;
+          iter++;
         }
         tokens.push_back(token(token::type::symbol, symbol));
         iter--;
@@ -86,7 +88,7 @@ public:
         continue;
       default:
         std::cerr << "Unrecognized operator:"
-                  << "'" << *iter << "'" << std::endl;
+                  << "'" << (int)*iter << "'" << std::endl;
         continue;
       }
     }

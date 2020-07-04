@@ -72,21 +72,11 @@ public:
     _reporter->report("111" + dest + _expr + jmp);
   };
 
-  virtual void visit(constant *c) {
-    std::cout << std::to_string(c->number()) << std::endl;
-    _expr = _computes.at(std::to_string(c->number()));
-  };
+  virtual void visit(constant *c) { _expr = _computes.at(std::to_string(c->number())); };
 
-  virtual void visit(binary *b) {
-    std::cout << "xxxxxx " << b->exp() << std::endl;
+  virtual void visit(binary *b) { _expr = _computes.at(b->exp()); };
 
-    _expr = _computes.at(b->exp());
-  };
-
-  virtual void visit(unary *u) {
-    std::cout << "unary" << u->exp() << std::endl;
-    _expr = _computes.at(u->exp());
-  };
+  virtual void visit(unary *u) { _expr = _computes.at(u->exp()); };
 
   virtual void visit(label *){
 
@@ -105,7 +95,7 @@ private:
   std::shared_ptr<context> _ctx;
   std::string binary(int d) {
     std::string bin;
-    for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < 15; i++) {
       auto k = d >> i;
       if (k & 1) {
         bin = "1" + bin;

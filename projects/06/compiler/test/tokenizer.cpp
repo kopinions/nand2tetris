@@ -25,6 +25,14 @@ TEST(tokenizer, should_able_to_get_symbol) {
   ASSERT_THAT(toks.front().value(), testing::Eq("SYMBOL"));
 }
 
+TEST(tokenizer, should_able_to_get_symbol_with_underscore) {
+  tokenizer to;
+  std::list<token> toks = to.tokenize("SYMBOL_A");
+  ASSERT_THAT(toks.size(), 1);
+  ASSERT_THAT(toks.front().type(), testing::Eq(token::type::symbol));
+  ASSERT_THAT(toks.front().value(), testing::Eq("SYMBOL_A"));
+}
+
 TEST(tokenizer, should_able_to_get_the_label) {
   tokenizer to;
   std::list<token> toks = to.tokenize("(SYMBOL)");
@@ -120,5 +128,3 @@ TEST(tokenizer, should_able_to_bypass_white_space) {
   std::list<token> toks = to.tokenize("   //this is comment");
   ASSERT_THAT(toks.size(), 0);
 }
-
-

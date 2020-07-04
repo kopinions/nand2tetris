@@ -16,7 +16,7 @@ TEST(visitor, should_able_to_generate_a_construction) {
   auto reporter = std::make_shared<mock_reporter>();
   auto ctx = std::make_shared<context>();
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
-  EXPECT_CALL(*reporter, report("000000000000111")).Times(1);
+  EXPECT_CALL(*reporter, report("0000000000000111")).Times(1);
   nodes.front()->accept(v);
 }
 
@@ -37,7 +37,7 @@ TEST(visitor, should_able_to_generate_a_instruction_with_at_label) {
   }
 
   auto reporter = std::make_shared<mock_reporter>();
-  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("000000000000010"), testing::Eq("1110101110000000"),
+  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("0000000000000010"), testing::Eq("1110101110000000"),
                                                testing::Eq("1110100110000000"))))
       .Times(3);
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
@@ -64,7 +64,7 @@ TEST(visitor, should_able_to_generate_a_instruction_with_at_variable) {
 
   auto reporter = std::make_shared<mock_reporter>();
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
-  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("000000000010001"), testing::Eq("1110101110000000"),
+  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("0000000000010001"), testing::Eq("1110101110000000"),
                                                testing::Eq("1110100110000000"))))
       .Times(3);
 

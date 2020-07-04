@@ -1,7 +1,7 @@
 inc_src = include_directories('.')
 
 main = executable(
-  'main',
+  'asm',
   'main.cpp',
   c_args : [],
   cpp_args : [],
