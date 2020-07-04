@@ -1,5 +1,5 @@
-#ifndef HACK_VISITOR_HPP
-#define HACK_VISITOR_HPP
+#ifndef FIRST_PASS_VISITOR_HPP
+#define FIRST_PASS_VISITOR_HPP
 #include "ast.hpp"
 #include "context.hpp"
 #include "visitor.hpp"
@@ -35,4 +35,4 @@ private:
   std::shared_ptr<context> _ctx;
   int _pc;
 };
-#endif // HACK_VISITOR_HPP
+#endif // FIRST_PASS_VISITOR_HPP
