@@ -23,7 +23,7 @@ public:
       auto res = iter->type() == token::type::number ? std::make_unique<anode>(anode(std::stoi(iter->value())))
                                                      : std::make_unique<anode>(anode(iter->value()));
       iter++; // eat symbol/number
-      return std::make_optional<std::unique_ptr<node>>(std::move(res));
+      return std::make_optional<std::unique_ptr<anode>>(std::move(res));
     }
 
     return std::nullopt;

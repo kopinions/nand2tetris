@@ -3,6 +3,15 @@
 #include <iostream>
 
 class reporter {
-  void report(std::string message) { std::cout << message << std::endl; }
+public:
+  virtual void report(std::string) = 0;
+  virtual ~reporter() = default;
+};
+
+class file_reporter : public reporter {
+public:
+  virtual void report(std::string message){
+
+  };
 };
 #endif // REPORTER_HPP
