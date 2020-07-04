@@ -52,6 +52,9 @@ class label : public node {
 public:
   label(std::string name) : _name(name){};
   virtual void accept(std::shared_ptr<visitor> v) { v->visit(this); }
+  std::string name() {
+    return _name;
+  }
 
 private:
   std::string _name;

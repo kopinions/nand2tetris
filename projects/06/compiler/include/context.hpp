@@ -1,30 +1,24 @@
 #ifndef CONTEXT_HPP
 #define CONTEXT_HPP
 #include <list>
+#include <map>
 #include <optional>
 #include <string>
 
-class symbol {
-public:
-  symbol(std::string name, int address) : _name(name), _address(address) {}
-
-private:
-  std::string _name;
-  int _address;
-};
 class context {
 public:
-  context() : _symbols() { _symbols.push_back(symbol("R1", 1)); };
+  context() : _symbols(){};
   virtual ~context() = default;
-  std::optional<symbol> find(std::string name) { return std::nullopt; };
-  virtual void add(std::string name) {}
-  virtual void add(std::string name, int address) {}
-
-  virtual void update(std::string name, int address){
-
+  std::optional<int> defined(std::string name) {
+    try {
+      return std::make_optional<int>(_symbols.at(name));
+    } catch (std::exception ignored) {
+      return std::nullopt;
+    }
   };
+  virtual void define(std::string name, int location = -1) { _symbols[name] = location; }
 
 private:
-  std::list<symbol> _symbols;
+  std::map<std::string, int> _symbols;
 };
 #endif // CONTEXT_HPP
