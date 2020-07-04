@@ -13,7 +13,7 @@ TEST(first_pass_visitor_test, should_able_to_generate_a_construction) {
   auto ctx = std::make_shared<context>();
   auto v = std::make_shared<first_pass_visitor>(ctx);
   nodes.front()->accept(v);
-  ASSERT_THAT(*(ctx->defined("AA")), testing::Eq(-1));
+  ASSERT_THAT(*(ctx->defined("AA")), testing::Eq(17));
 }
 
 TEST(first_pass_visitor_test, should_able_to_query_when_label) {

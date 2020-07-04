@@ -15,21 +15,13 @@ public:
     _pc++;
   };
 
-  virtual void visit(cnode *){ _pc++; };
+  virtual void visit(cnode *) { _pc++; };
 
   virtual void visit(number *){
 
   };
 
-  virtual void visit(label *l) {
-    if (_ctx->defined(l->name()) == std::nullopt) {
-      _ctx->define(l->name(), _pc);
-    } else if (*(_ctx->defined(l->name())) == -1) {
-      _ctx->define(l->name(), _pc);
-    } else {
-      std::cerr << "error" << std::endl;
-    }
-  };
+  virtual void visit(label *l) { _ctx->define(l->name(), _pc); };
 
   virtual void visit(expression *){
 
