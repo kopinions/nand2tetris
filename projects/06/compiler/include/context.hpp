@@ -46,7 +46,7 @@ public:
 
     if (location == -1) {
       if (_freed_variable_location.empty()) {
-        _symbols[name] = ++_variable_it;
+        _symbols[name] = _variable_it++;
       } else {
         _symbols[name] = _freed_variable_location.front();
         _freed_variable_location.pop();

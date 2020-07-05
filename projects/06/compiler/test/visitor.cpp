@@ -37,8 +37,8 @@ TEST(visitor, should_able_to_generate_a_instruction_with_at_label) {
   }
 
   auto reporter = std::make_shared<mock_reporter>();
-  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("0000000000000010"), testing::Eq("1110101110000000"),
-                                               testing::Eq("1110100110000000"))))
+  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("0000000000000010"), testing::Eq("1111110000010000"),
+                                               testing::Eq("1110110000010000"))))
       .Times(3);
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
 
@@ -64,8 +64,8 @@ TEST(visitor, should_able_to_generate_a_instruction_with_at_variable) {
 
   auto reporter = std::make_shared<mock_reporter>();
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
-  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("0000000000010001"), testing::Eq("1110101110000000"),
-                                               testing::Eq("1110100110000000"))))
+  EXPECT_CALL(*reporter, report(testing::AnyOf(testing::Eq("0000000000010000"), testing::Eq("1111110000010000"),
+                                               testing::Eq("1110110000010000"))))
       .Times(3);
 
   for (auto it = nodes.begin(); it != nodes.end(); it++) {
@@ -88,7 +88,7 @@ TEST(visitor, should_able_to_generate_c_instruction) {
 
   auto reporter = std::make_shared<mock_reporter>();
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
-  EXPECT_CALL(*reporter, report("1110010011111111")).Times(1);
+  EXPECT_CALL(*reporter, report("1110011111001111")).Times(1);
 
   for (auto it = nodes.begin(); it != nodes.end(); it++) {
     (*it)->accept(v);
@@ -110,7 +110,7 @@ TEST(visitor, should_able_to_generate_c_instruction_without_dist) {
 
   auto reporter = std::make_shared<mock_reporter>();
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
-  EXPECT_CALL(*reporter, report("1110000011111111")).Times(1);
+  EXPECT_CALL(*reporter, report("1110011111000111")).Times(1);
 
   for (auto it = nodes.begin(); it != nodes.end(); it++) {
     (*it)->accept(v);
@@ -132,7 +132,7 @@ TEST(visitor, should_able_to_generate_c_instruction_unconditional_jump) {
 
   auto reporter = std::make_shared<mock_reporter>();
   auto v = std::make_shared<hack_visitor>(reporter, ctx);
-  EXPECT_CALL(*reporter, report("1110000101010111")).Times(1);
+  EXPECT_CALL(*reporter, report("1110101010000111")).Times(1);
 
   for (auto it = nodes.begin(); it != nodes.end(); it++) {
     (*it)->accept(v);

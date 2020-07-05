@@ -5,16 +5,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-TEST(first_pass_visitor_test, should_able_to_generate_a_construction) {
-  tokenizer to;
-  std::list<token> tokens = to.tokenize("@AA");
-  parser parser;
-  std::list<std::unique_ptr<node>> nodes = parser.parse(tokens);
-  auto ctx = std::make_shared<context>();
-  auto v = std::make_shared<first_pass_visitor>(ctx);
-  nodes.front()->accept(v);
-  ASSERT_THAT(*(ctx->defined("AA")), testing::Eq(17));
-}
 
 TEST(first_pass_visitor_test, should_able_to_query_when_label) {
   tokenizer to;
@@ -66,5 +56,4 @@ TEST(first_pass_visitor_test, should_not_count_the_label_node_to_the_instruction
   }
 
   ASSERT_THAT(*(ctx->defined("BB")), testing::Eq(5));
-  ASSERT_THAT(*(ctx->defined("CC")), testing::Eq(17));
 }

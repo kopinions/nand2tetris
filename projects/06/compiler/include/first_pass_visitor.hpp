@@ -11,7 +11,6 @@ public:
   first_pass_visitor(std::shared_ptr<context> ctx) : _ctx(ctx), _pc(0){};
 
   virtual void visit(anode *n) {
-    _ctx->define(n->symbol());
     _pc++;
   };
 

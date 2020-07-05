@@ -57,10 +57,17 @@ public:
   };
 
   virtual void visit(anode *n) {
-    if (n->symbol() != "") {
-      _reporter->report("0" + binary(*(_ctx->defined(n->symbol()))));
-    } else {
+    if (n->address() != -1) {
       _reporter->report("0" + binary(n->address()));
+      return;
+    }
+
+    auto def = _ctx->defined(n->symbol());
+    if (def != std::nullopt) {
+      _reporter->report("0" + binary(*def));
+    } else {
+      _ctx->define(n->symbol());
+      _reporter->report("0" + binary(*(_ctx->defined(n->symbol()))));
     }
   };
 
@@ -69,7 +76,7 @@ public:
     auto jmp = c->jmp().empty() ? "000" : _jumps.at(c->jmp());
 
     c->e()->accept(shared_from_this());
-    _reporter->report("111" + dest + _expr + jmp);
+    _reporter->report("111" + _expr + dest + jmp);
   };
 
   virtual void visit(constant *c) { _expr = _computes.at(std::to_string(c->number())); };
