@@ -3,12 +3,23 @@
 #include <list>
 #include <map>
 #include <optional>
-#include <string>
 #include <queue>
+#include <string>
 
 class context {
 public:
-  context() : _symbols(), _variable_it(16), _freed_variable_location(){};
+  context() : _symbols(), _variable_it(16), _freed_variable_location() {
+    for (auto i = 0; i < 16; i++) {
+      _symbols["R" + std::to_string(i)] = i;
+    }
+    _symbols["SCREEN"] = 16384;
+    _symbols["KBD"] = 24576;
+    _symbols["SP"] = 0;
+    _symbols["LCL"] = 1;
+    _symbols["ARG"] = 2;
+    _symbols["THIS"] = 3;
+    _symbols["THAT"] = 4;
+  };
   virtual ~context() = default;
   std::optional<int> defined(std::string name) {
     try {
